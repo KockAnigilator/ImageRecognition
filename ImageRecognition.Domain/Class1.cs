@@ -1,6 +1,9 @@
-﻿namespace ImageRecognition.Domain;
+namespace ImageRecognition.Domain;
 
-public class Class1
+/// <summary>
+/// Простая заглушка пространства имён Domain, чтобы сохранить совместимость с исходным шаблоном.
+/// Реальные доменные классы расположены в соответствующих файлах.
+/// </summary>
+public static class DomainAssemblyMarker
 {
-
 }
