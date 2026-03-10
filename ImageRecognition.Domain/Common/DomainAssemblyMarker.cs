@@ -7,3 +7,4 @@ namespace ImageRecognition.Domain;
 public static class DomainAssemblyMarker
 {
 }
+
