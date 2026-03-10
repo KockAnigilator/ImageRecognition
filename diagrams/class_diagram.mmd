@@ -1,0 +1,77 @@
+classDiagram
+    class KDNode {
+        +double[] Point
+        +int Label
+        +KDNode Left
+        +KDNode Right
+        +int Axis
+    }
+
+    class KDTree {
+        +KDNode Root
+        +int Dimension
+        +BuildTree(points, labels)
+        +Insert(point, label)
+        +NearestNeighbor(target)
+        +KNearestNeighbors(target, k)
+    }
+
+    class KNearestNeighbors {
+        +Classify(tree, featureVector, k)
+        +ClassifyLinear(trainingPoints, trainingLabels, featureVector, k)
+    }
+
+    class DistanceCalculator {
+        +EuclideanDistance(a, b)
+    }
+
+    KDTree *-- KDNode
+    KNearestNeighbors --> KDTree
+    KNearestNeighbors --> DistanceCalculator
+
+    class ImageClass {
+        +int Id
+        +string Name
+    }
+
+    class ImageRecord {
+        +int Id
+        +int ClassId
+        +string FilePath
+    }
+
+    class ImageFeatures {
+        +int Id
+        +int ImageId
+        +double[] Vector
+    }
+
+    class ModelInfo {
+        +int Id
+        +string Name
+        +int Dimension
+    }
+
+    ImageClass "1" --> "N" ImageRecord
+    ImageRecord "1" --> "0..1" ImageFeatures
+
+    class IImagePreprocessingService {
+        <<interface>>
+        +ExtractFeatures(filePath)
+    }
+
+    class ImagePreprocessingService {
+        +ExtractFeatures(filePath)
+    }
+
+    IImagePreprocessingService <|.. ImagePreprocessingService
+
+    class PostgresOptions {
+        +string Host
+        +int Port
+        +string Database
+    }
+
+    class PostgresConnectionFactory {
+        +CreateOpenConnection()
+    }

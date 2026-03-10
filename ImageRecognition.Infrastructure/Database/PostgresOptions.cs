@@ -2,7 +2,6 @@ namespace ImageRecognition.Infrastructure.Database;
 
 /// <summary>
 /// Параметры подключения к PostgreSQL.
-/// Для курсовой работы достаточно задавать их в одном месте.
 /// </summary>
 public sealed class PostgresOptions
 {

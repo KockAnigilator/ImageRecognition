@@ -1,8 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "xLmGLdnhqTg=",
+  "dgSpecHash": "TyBC29I6B50=",
   "success": true,
   "projectFilePath": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Application\\ImageRecognition.Application.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.win32.systemevents\\10.0.3\\microsoft.win32.systemevents.10.0.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\npgsql\\10.0.1\\npgsql.10.0.1.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\system.drawing.common\\10.0.3\\system.drawing.common.10.0.3.nupkg.sha512"
+  ],
   "logs": []
 }

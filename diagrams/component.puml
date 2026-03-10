@@ -1,0 +1,32 @@
+@startuml component
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+
+package "ImageRecognition.UI" {
+  [MainWindow] as UI
+}
+
+package "ImageRecognition.Application" {
+  [ImagePreprocessingService] as App
+}
+
+package "ImageRecognition.Domain" {
+  [KDTree] as KD
+  [KNearestNeighbors] as KNN
+  [DistanceCalculator] as DC
+}
+
+package "ImageRecognition.Infrastructure" {
+  [PostgresConnectionFactory] as DB
+  database "PostgreSQL" as PG
+}
+
+UI --> App : вызывает
+App --> KD : использует
+App --> KNN : использует
+KNN --> KD : использует
+KNN --> DC : использует
+App --> DB : использует
+DB --> PG : подключается
+
+@enduml

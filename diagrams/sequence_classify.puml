@@ -1,0 +1,30 @@
+@startuml sequence
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+
+actor Пользователь
+participant "UI (WPF)" as UI
+participant "Application" as App
+participant "ImagePreprocessing" as IP
+participant "KNearestNeighbors" as KNN
+participant "KDTree" as KD
+participant "Database" as DB
+
+Пользователь -> UI: Загрузить изображение
+UI -> App: Классифицировать(filePath)
+App -> IP: ExtractFeatures(filePath)
+IP --> App: vector[256]
+
+App -> DB: Получить модель
+DB --> App: KDTree, метаданные
+
+App -> KNN: Classify(tree, vector, k)
+KNN -> KD: KNearestNeighbors(vector, k)
+KD --> KNN: k ближайших соседей
+KNN --> KNN: MajorityVote
+KNN --> App: predictedClassId
+
+App --> UI: Результат (класс, время)
+UI --> Пользователь: Показать результат
+
+@enduml
