@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ImageRecognition.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+402e1ae40d9e7c1fb8cb83d40d824d4d93917795")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e025ff1c66ea39d19f8e1970f6f71c4c1cb7d887")]
 [assembly: System.Reflection.AssemblyProductAttribute("ImageRecognition.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ImageRecognition.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

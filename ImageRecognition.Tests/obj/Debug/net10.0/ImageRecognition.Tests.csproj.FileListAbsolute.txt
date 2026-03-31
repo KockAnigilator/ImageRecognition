@@ -1,0 +1,10 @@
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\bin\Debug\net10.0\.msCoverageExtensionSourceRootsMapping_ImageRecognition.Tests
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\bin\Debug\net10.0\.msCoverageSourceRootsMapping_ImageRecognition.Tests
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\obj\Debug\net10.0\ImageRecognition.Tests.csproj.AssemblyReference.cache
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\obj\Debug\net10.0\ImageRecognition.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\obj\Debug\net10.0\ImageRecognition.Tests.gentestingplatformentrypointinputcache.cache
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\obj\Debug\net10.0\ImageRecognition.Tests.genautoregisteredextensionsinputcache.cache
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\obj\Debug\net10.0\ImageRecognition.Tests.AssemblyInfoInputs.cache
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\obj\Debug\net10.0\ImageRecognition.Tests.AssemblyInfo.cs
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\obj\Debug\net10.0\ImageRecognition.Tests.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\GitHub\K-D-Tree\ImageRecognition.Tests\obj\Debug\net10.0\ImageRecognition.Tests.sourcelink.json

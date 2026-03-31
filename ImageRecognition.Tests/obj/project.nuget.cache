@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OqPw+/4y+6c=",
+  "dgSpecHash": "rRmDYg9bID0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Tests\\ImageRecognition.Tests.csproj",
+  "projectFilePath": "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Tests\\ImageRecognition.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\microsoft.applicationinsights\\2.23.0\\microsoft.applicationinsights.2.23.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.codecoverage\\18.0.0\\microsoft.codecoverage.18.0.0.nupkg.sha512",

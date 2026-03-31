@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sAsLZw49sFo=",
+  "dgSpecHash": "xwFK9dLyrFc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Infrastructure\\ImageRecognition.Infrastructure.csproj",
+  "projectFilePath": "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Infrastructure\\ImageRecognition.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",

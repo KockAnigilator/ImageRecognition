@@ -2652,11 +2652,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Tests\\ImageRecognition.Tests.csproj",
+      "projectUniqueName": "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Tests\\ImageRecognition.Tests.csproj",
       "projectName": "ImageRecognition.Tests",
-      "projectPath": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Tests\\ImageRecognition.Tests.csproj",
+      "projectPath": "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Tests\\ImageRecognition.Tests.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Tests\\obj\\",
+      "outputPath": "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2678,14 +2678,14 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Application\\ImageRecognition.Application.csproj": {
-              "projectPath": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Application\\ImageRecognition.Application.csproj"
+            "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Application\\ImageRecognition.Application.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Application\\ImageRecognition.Application.csproj"
             },
-            "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Domain\\ImageRecognition.Domain.csproj": {
-              "projectPath": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Domain\\ImageRecognition.Domain.csproj"
+            "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Domain\\ImageRecognition.Domain.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Domain\\ImageRecognition.Domain.csproj"
             },
-            "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Infrastructure\\ImageRecognition.Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\user\\Documents\\GitHub\\ImageRecognition\\ImageRecognition.Infrastructure\\ImageRecognition.Infrastructure.csproj"
+            "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Infrastructure\\ImageRecognition.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\user\\Documents\\GitHub\\K-D-Tree\\ImageRecognition.Infrastructure\\ImageRecognition.Infrastructure.csproj"
             }
           }
         }
