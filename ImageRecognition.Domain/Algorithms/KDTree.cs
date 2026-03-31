@@ -119,8 +119,8 @@ public sealed class KDTree
     {
         if (node is null)
         {
-            int axis = depth % Dimension;
-            return new KDNode(point, label, axis);
+            int newNodeAxis = depth % Dimension;
+            return new KDNode(point, label, newNodeAxis);
         }
 
         int axis = node.Axis;

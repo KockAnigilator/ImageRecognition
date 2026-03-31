@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Runtime.Versioning;
 using ImageRecognition.Application.Interfaces;
 
 namespace ImageRecognition.Application.ImageProcessing;
@@ -13,6 +14,7 @@ public sealed class ImagePreprocessingService : IImagePreprocessingService
     private const int TargetHeight = 16;
     private const int FeatureVectorLength = TargetWidth * TargetHeight;
 
+    [SupportedOSPlatform("windows")]
     public double[] ExtractFeatures(string filePath)
     {
         if (string.IsNullOrWhiteSpace(filePath))
