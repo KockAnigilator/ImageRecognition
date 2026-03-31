@@ -4,49 +4,126 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Image Recognition (kNN + KDTree)" Height="640" Width="980"
-        WindowStartupLocation="CenterScreen">
-    <Grid Margin="12">
+        Title="Image Recognition: kNN + KD-Tree"
+        Height="760" Width="1120"
+        WindowStartupLocation="CenterScreen"
+        Background="White">
+    <Grid Margin="14">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="180"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="200"/>
-        </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Class name:"/>
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="ClassNameTextBox" Margin="4" Text="digit_0"/>
-        <Button Grid.Row="0" Grid.Column="2" Margin="4" Content="Initialize Database" Click="InitializeDatabaseButton_Click"/>
+        <TextBlock Grid.Row="0"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Foreground="#111827"
+                   Text="Система распознавания изображений (kNN + KD-Tree)"/>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="Image path:"/>
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ImagePathTextBox" Margin="4"/>
-        <Button Grid.Row="1" Grid.Column="2" Margin="4" Content="Browse Image..." Click="BrowseImageButton_Click"/>
+        <Border Grid.Row="1" Margin="0,10,0,12" Padding="10" BorderBrush="#D1D5DB" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="170"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="170"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Text="k:"/>
-        <TextBox Grid.Row="2" Grid.Column="1" x:Name="KTextBox" Margin="4" Text="3"/>
-        <Button Grid.Row="2" Grid.Column="2" Margin="4" Content="Add Training Image" Click="AddTrainingImageButton_Click"/>
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="Host"/>
+                <TextBox Grid.Column="1" x:Name="DbHostTextBox" Margin="6,0" Text="localhost"/>
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="Port"/>
+                <TextBox Grid.Column="3" x:Name="DbPortTextBox" Margin="6,0" Text="5432"/>
+                <TextBlock Grid.Column="4" VerticalAlignment="Center" Text="Database"/>
+                <TextBox Grid.Column="5" x:Name="DbNameTextBox" Margin="6,0" Text="Image_recognition_db"/>
+                <TextBlock Grid.Column="6" VerticalAlignment="Center" Text="Username"/>
+                <TextBox Grid.Column="7" x:Name="DbUserTextBox" Margin="6,0" Text="postgres"/>
+                <TextBlock Grid.Column="8" VerticalAlignment="Center" Text="Password"/>
+                <TextBox Grid.Column="9" x:Name="DbPasswordTextBox" Margin="6,0" Text="10112275"/>
+            </Grid>
+        </Border>
 
-        <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Text="Model name:"/>
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="ModelNameTextBox" Margin="4" Text="kNN_coursework_model"/>
-        <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Vertical" Margin="4">
-            <Button Margin="0,0,0,6" Content="Train Model" Click="TrainModelButton_Click"/>
-            <Button Margin="0,0,0,6" Content="Classify (KDTree)" Click="ClassifyKdTreeButton_Click"/>
-            <Button Margin="0,0,0,6" Content="Classify (Linear)" Click="ClassifyLinearButton_Click"/>
-            <Button Content="Run Benchmark" Click="BenchmarkButton_Click"/>
-        </StackPanel>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.1*"/>
+                <ColumnDefinition Width="2.2*"/>
+                <ColumnDefinition Width="1.6*"/>
+            </Grid.ColumnDefinitions>
 
-        <TextBox Grid.Row="4" Grid.ColumnSpan="3"
-                 x:Name="LogTextBox"
-                 Margin="4"
-                 IsReadOnly="True"
-                 VerticalScrollBarVisibility="Auto"
-                 TextWrapping="Wrap"
-                 FontFamily="Consolas"/>
+            <Border Grid.Column="0" Margin="0,0,10,0" Padding="10" BorderBrush="#D1D5DB" BorderThickness="1">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" FontSize="16" Text="Подключение и данные"/>
+                    <WrapPanel Margin="0,10,0,8">
+                        <Button x:Name="ConnectDbButton" Width="180" Margin="0,0,8,0" Content="Подключиться к БД" Click="ConnectDbButton_Click"/>
+                        <Button x:Name="InitializeSchemaButton" Width="180" Margin="0,0,8,0" Content="Инициализировать таблицы" Click="InitializeDatabaseButton_Click"/>
+                        <Button Width="110" Content="Справка" Click="HelpButton_Click"/>
+                    </WrapPanel>
+
+                    <TextBlock Margin="0,6,0,2" Text="Класс (например, digit_5 или shape_circle)"/>
+                    <TextBox x:Name="ClassNameTextBox" Text="digit_5"/>
+                    <TextBlock Margin="0,8,0,2" Text="Путь к изображению"/>
+                    <DockPanel>
+                        <TextBox x:Name="ImagePathTextBox" DockPanel.Dock="Left"/>
+                        <Button Content="Обзор..." Click="BrowseImageButton_Click"/>
+                    </DockPanel>
+                    <Button Margin="0,8,0,0" Width="210" Content="Добавить обучающее изображение" Click="AddTrainingImageButton_Click"/>
+                    <Button x:Name="GenerateDemoButton" Margin="0,8,0,0" Width="260" Content="Generate Demo Samples and Import" Click="GenerateDemoSamplesButton_Click"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Margin="0,0,10,0" Padding="10" BorderBrush="#D1D5DB" BorderThickness="1">
+                <StackPanel x:Name="WorkPanel">
+                    <TextBlock FontWeight="Bold" FontSize="16" Text="Обучение и классификация"/>
+                    <TextBlock Margin="0,10,0,2" Text="Название модели"/>
+                    <TextBox x:Name="ModelNameTextBox" Text="kNN_coursework_model"/>
+                    <TextBlock Margin="0,8,0,2" Text="k (положительное целое)"/>
+                    <TextBox x:Name="KTextBox" Text="3"/>
+                    <WrapPanel Margin="0,10,0,0">
+                        <Button Width="140" Margin="0,0,8,8" Content="Обучить модель" Click="TrainModelButton_Click"/>
+                        <Button Width="170" Margin="0,0,8,8" Content="Классифицировать KDTree" Click="ClassifyKdTreeButton_Click"/>
+                        <Button Width="170" Margin="0,0,8,8" Content="Классифицировать линейно" Click="ClassifyLinearButton_Click"/>
+                        <Button Width="150" Margin="0,0,8,8" Content="Запустить benchmark" Click="BenchmarkButton_Click"/>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Padding="10" BorderBrush="#D1D5DB" BorderThickness="1">
+                <StackPanel>
+                    <TextBlock FontWeight="Bold" FontSize="16" Text="Статус"/>
+                    <TextBlock x:Name="ConnectionStatusTextBlock"
+                               Margin="0,10,0,0"
+                               FontWeight="SemiBold"
+                               Foreground="#991B1B"
+                               Text="БД: не подключено"/>
+                    <TextBlock Margin="0,12,0,2" TextWrapping="Wrap" Text="Перед работой нужно: 1) подключиться к существующей БД, 2) инициализировать таблицы, 3) добавить обучающие примеры, 4) обучить модель."/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="3" Margin="0,12,0,0" Padding="10" BorderBrush="#D1D5DB" BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" FontWeight="Bold" FontSize="16" Text="Лог выполнения"/>
+                <TextBox Grid.Row="1"
+                         x:Name="LogTextBox"
+                         Margin="0,8,0,0"
+                         IsReadOnly="True"
+                         VerticalScrollBarVisibility="Auto"
+                         TextWrapping="Wrap"
+                         FontFamily="Consolas"
+                         Background="#0F172A"
+                         Foreground="#E5E7EB"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

@@ -21,5 +21,7 @@ public sealed class PostgresConnectionFactory
         connection.Open();
         return connection;
     }
+
+    public PostgresOptions Options => _options;
 }
 

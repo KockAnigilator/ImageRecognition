@@ -11,9 +11,10 @@ public sealed class PostgresOptions
     public string Username { get; set; } = "postgres";
     public string Password { get; set; } = "10112275";
 
-    public string ToConnectionString()
+    public string ToConnectionString(string? databaseOverride = null)
     {
-        return $"Host={Host};Port={Port};Database={Database};Username={Username};Password={Password}";
+        string database = string.IsNullOrWhiteSpace(databaseOverride) ? Database : databaseOverride;
+        return $"Host={Host};Port={Port};Database={database};Username={Username};Password={Password}";
     }
 }
 
