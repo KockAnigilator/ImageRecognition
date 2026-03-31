@@ -90,6 +90,15 @@ public sealed class RecognitionRepository : IRecognitionRepository
         return Convert.ToInt32(value);
     }
 
+    public async Task<string?> GetClassNameByIdAsync(int classId)
+    {
+        using var connection = _connectionFactory.CreateOpenConnection();
+        await using var command = new NpgsqlCommand("SELECT name FROM classes WHERE id = @id;", connection);
+        command.Parameters.AddWithValue("id", classId);
+        object? value = await command.ExecuteScalarAsync();
+        return value?.ToString();
+    }
+
     public async Task<int> AddImageWithFeaturesAsync(string filePath, int classId, double[] features)
     {
         using var connection = _connectionFactory.CreateOpenConnection();

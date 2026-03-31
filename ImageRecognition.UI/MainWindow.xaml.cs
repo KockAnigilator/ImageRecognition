@@ -2,6 +2,7 @@ using ImageRecognition.Application.Interfaces;
 using ImageRecognition.Application.Services;
 using ImageRecognition.Infrastructure.Database;
 using Microsoft.Win32;
+using Npgsql;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -67,14 +68,14 @@ public partial class MainWindow : Window
             };
 
             _recognitionService = ApplicationFactory.CreateDefaultRecognitionService(options);
-            // Проверяем подключение к существующей базе: создание БД отключено.
-            _recognitionService.InitializeDatabaseAsync().GetAwaiter().GetResult();
+            using var connection = new NpgsqlConnection(options.ToConnectionString());
+            connection.Open();
 
             _isDatabaseConnected = true;
             SetWorkPanelEnabled(true);
             ConnectionStatusTextBlock.Text = $"БД: подключено ({options.Host}:{options.Port}/{options.Database})";
             ConnectionStatusTextBlock.Foreground = System.Windows.Media.Brushes.DarkGreen;
-            AppendLog("Подключение к БД успешно. Таблицы готовы.");
+            AppendLog("Подключение к существующей БД успешно.");
         }
         catch (Exception ex)
         {
@@ -168,7 +169,8 @@ public partial class MainWindow : Window
             if (!TryValidateImagePath(out string filePath)) return;
 
             var result = await _recognitionService!.ClassifyImageAsync(filePath, k, useKdTree);
-            AppendLog($"Classified ({(useKdTree ? "KDTree" : "Linear")}): classId={result.PredictedClassId}, search={result.SearchTime.TotalMilliseconds:F2} ms");
+            LastResultTextBlock.Text = $"Класс: {result.PredictedClassName} (id={result.PredictedClassId}), метод={(useKdTree ? "KDTree" : "Linear")}";
+            AppendLog($"Classified ({(useKdTree ? "KDTree" : "Linear")}): class={result.PredictedClassName}, id={result.PredictedClassId}, search={result.SearchTime.TotalMilliseconds:F2} ms");
         }
         catch (Exception ex)
         {

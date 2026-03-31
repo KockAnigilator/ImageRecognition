@@ -101,9 +101,12 @@ public sealed class RecognitionService : IRecognitionService
             CreatedAt = DateTime.UtcNow
         });
 
+        string predictedClassName = await _repository.GetClassNameByIdAsync(predicted) ?? $"class_{predicted}";
+
         return new ClassificationResult
         {
             PredictedClassId = predicted,
+            PredictedClassName = predictedClassName,
             SearchTime = sw.Elapsed,
             UsedKdTree = useKdTree,
             K = k
