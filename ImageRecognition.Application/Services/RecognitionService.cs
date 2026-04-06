@@ -22,6 +22,20 @@ public sealed class RecognitionService : IRecognitionService
 
     public Task InitializeDatabaseAsync() => _repository.InitializeDatabaseAsync();
 
+    public async Task<DatabaseOverviewResult> GetDatabaseOverviewAsync()
+    {
+        var stats = await _repository.GetStatisticsAsync();
+        return new DatabaseOverviewResult
+        {
+            Classes = stats.Classes,
+            Images = stats.Images,
+            Features = stats.Features,
+            Models = stats.Models,
+            Experiments = stats.Experiments,
+            Predictions = stats.Predictions
+        };
+    }
+
     public async Task<int> AddTrainingImageAsync(string filePath, string className)
     {
         if (string.IsNullOrWhiteSpace(className))

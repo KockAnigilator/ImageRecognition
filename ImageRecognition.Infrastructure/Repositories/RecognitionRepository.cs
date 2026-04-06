@@ -71,6 +71,16 @@ public sealed class RecognitionRepository : IRecognitionRepository
                 k INT NOT NULL,
                 created_at TIMESTAMP NOT NULL DEFAULT NOW()
             );
+
+            ALTER TABLE classes ADD COLUMN IF NOT EXISTS description TEXT NULL;
+            ALTER TABLE classes ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
+
+            ALTER TABLE images ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
+
+            ALTER TABLE models ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
+            ALTER TABLE models ADD COLUMN IF NOT EXISTS description TEXT NULL;
+
+            ALTER TABLE predictions ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
             """;
 
         await using var command = new NpgsqlCommand(sql, connection);
@@ -88,6 +98,32 @@ public sealed class RecognitionRepository : IRecognitionRepository
         command.Parameters.AddWithValue("name", className);
         object? value = await command.ExecuteScalarAsync();
         return Convert.ToInt32(value);
+    }
+
+    public async Task<(int Classes, int Images, int Features, int Models, int Experiments, int Predictions)> GetStatisticsAsync()
+    {
+        using var connection = _connectionFactory.CreateOpenConnection();
+        await using var command = new NpgsqlCommand("""
+            SELECT
+                (SELECT COUNT(*) FROM classes),
+                (SELECT COUNT(*) FROM images),
+                (SELECT COUNT(*) FROM features),
+                (SELECT COUNT(*) FROM models),
+                (SELECT COUNT(*) FROM experiments),
+                (SELECT COUNT(*) FROM predictions);
+            """, connection);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        await reader.ReadAsync();
+
+        return (
+            Classes: reader.GetInt32(0),
+            Images: reader.GetInt32(1),
+            Features: reader.GetInt32(2),
+            Models: reader.GetInt32(3),
+            Experiments: reader.GetInt32(4),
+            Predictions: reader.GetInt32(5)
+        );
     }
 
     public async Task<string?> GetClassNameByIdAsync(int classId)

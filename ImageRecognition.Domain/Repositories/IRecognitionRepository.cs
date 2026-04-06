@@ -3,6 +3,7 @@ namespace ImageRecognition.Domain;
 public interface IRecognitionRepository
 {
     Task InitializeDatabaseAsync();
+    Task<(int Classes, int Images, int Features, int Models, int Experiments, int Predictions)> GetStatisticsAsync();
     Task<string?> GetClassNameByIdAsync(int classId);
     Task<int> EnsureClassAsync(string className);
     Task<int> AddImageWithFeaturesAsync(string filePath, int classId, double[] features);

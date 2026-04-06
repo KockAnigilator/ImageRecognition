@@ -50,6 +50,7 @@
                     <WrapPanel Grid.Row="3" Grid.ColumnSpan="4" Margin="0,6,0,0">
                         <Button x:Name="ConnectDbButton" Width="180" Margin="0,0,8,0" Content="Подключиться к БД" Click="ConnectDbButton_Click"/>
                         <Button x:Name="InitializeSchemaButton" Width="210" Margin="0,0,8,0" Content="Инициализировать таблицы" Click="InitializeDatabaseButton_Click"/>
+                        <Button Width="180" Margin="0,0,8,0" Content="Проверить записи в БД" Click="CheckDatabaseButton_Click"/>
                     </WrapPanel>
                 </Grid>
             </TabItem>
@@ -63,16 +64,16 @@
 
                     <Border Grid.Column="0" Padding="10" BorderBrush="#D1D5DB" BorderThickness="1" Margin="0,0,8,0">
                         <StackPanel x:Name="WorkPanel">
-                            <TextBlock FontWeight="Bold" FontSize="16" Text="Обучающие данные"/>
-                            <TextBlock Margin="0,10,0,2" Text="Класс (например, digit_5)"/>
+                            <TextBlock FontWeight="Bold" FontSize="16" Text="Добавление обучающего примера"/>
+                            <TextBlock Margin="0,10,0,2" Text="Правильный класс (например, digit_5)"/>
                             <TextBox x:Name="ClassNameTextBox" Text="digit_5"/>
-                            <TextBlock Margin="0,8,0,2" Text="Путь к изображению"/>
+                            <TextBlock Margin="0,8,0,2" Text="Фото для обучения"/>
                             <DockPanel>
-                                <TextBox x:Name="ImagePathTextBox" DockPanel.Dock="Left"/>
-                                <Button Content="Обзор..." Click="BrowseImageButton_Click"/>
+                                <TextBox x:Name="TrainingImagePathTextBox" DockPanel.Dock="Left"/>
+                                <Button Content="Выбрать..." Click="BrowseTrainingImageButton_Click"/>
                             </DockPanel>
-                            <Button Margin="0,8,0,0" Width="240" Content="Добавить обучающее изображение" Click="AddTrainingImageButton_Click"/>
-                            <Button x:Name="GenerateDemoButton" Margin="0,8,0,0" Width="260" Content="Generate Demo Samples and Import" Click="GenerateDemoSamplesButton_Click"/>
+                            <Button Margin="0,8,0,0" Width="260" Content="Сохранить пример в БД" Click="AddTrainingImageButton_Click"/>
+                            <Button x:Name="GenerateDemoButton" Margin="0,8,0,0" Width="280" Content="Сгенерировать демо-примеры и загрузить" Click="GenerateDemoSamplesButton_Click"/>
                         </StackPanel>
                     </Border>
 
@@ -83,10 +84,15 @@
                             <TextBox x:Name="ModelNameTextBox" Text="kNN_coursework_model"/>
                             <TextBlock Margin="0,8,0,2" Text="k (положительное целое)"/>
                             <TextBox x:Name="KTextBox" Text="3"/>
+                            <TextBlock Margin="0,8,0,2" Text="Фото для определения"/>
+                            <DockPanel>
+                                <TextBox x:Name="InferenceImagePathTextBox" DockPanel.Dock="Left"/>
+                                <Button Content="Выбрать..." Click="BrowseInferenceImageButton_Click"/>
+                            </DockPanel>
                             <WrapPanel Margin="0,10,0,0">
-                                <Button Width="140" Margin="0,0,8,8" Content="Обучить модель" Click="TrainModelButton_Click"/>
-                                <Button Width="170" Margin="0,0,8,8" Content="Классифицировать KDTree" Click="ClassifyKdTreeButton_Click"/>
-                                <Button Width="170" Margin="0,0,8,8" Content="Классифицировать линейно" Click="ClassifyLinearButton_Click"/>
+                                <Button Width="150" Margin="0,0,8,8" Content="Обучить модель" Click="TrainModelButton_Click"/>
+                                <Button Width="220" Margin="0,0,8,8" Content="Определить, что на фото (KD-Tree)" Click="ClassifyKdTreeButton_Click"/>
+                                <Button Width="220" Margin="0,0,8,8" Content="Определить, что на фото (линейно)" Click="ClassifyLinearButton_Click"/>
                                 <Button Width="150" Margin="0,0,8,8" Content="Запустить benchmark" Click="BenchmarkButton_Click"/>
                             </WrapPanel>
 
@@ -95,6 +101,7 @@
                                     <TextBlock FontWeight="Bold" Text="Последний результат"/>
                                     <TextBlock x:Name="LastResultTextBlock" Margin="0,6,0,0" Text="Нет данных"/>
                                     <TextBlock x:Name="ConnectionStatusTextBlock" Margin="0,8,0,0" Foreground="#991B1B" Text="БД: не подключено"/>
+                                    <TextBlock x:Name="DatabaseStatsTextBlock" Margin="0,6,0,0" Text="Статистика БД: нет данных"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -105,20 +112,26 @@
             <TabItem Header="Справка">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <TextBlock Margin="12" TextWrapping="Wrap" FontSize="14">
-1. Перейдите во вкладку "Подключение к БД", введите параметры существующей PostgreSQL и нажмите "Подключиться к БД".
+Быстрый старт:
+1) Вкладка "Подключение к БД" → введите параметры → "Подключиться к БД".
+2) Нажмите "Инициализировать таблицы".
+3) Нажмите "Проверить записи в БД" и убедитесь, что есть соединение.
+4) Вкладка "Работа с моделью":
+   - добавьте обучающие примеры вручную ИЛИ нажмите кнопку генерации демо-примеров;
+   - нажмите "Обучить модель";
+   - выберите фото для определения;
+   - нажмите "Определить, что на фото".
 
-2. Если подключение успешно, откройте вкладку "Работа с моделью". Добавьте обучающие данные:
-- вручную (Class name + путь к файлу + кнопка добавления),
-- либо автоматически кнопкой "Generate Demo Samples and Import".
+Как понимать результат:
+- Если в блоке "Последний результат" написано "Класс: digit_5",
+  значит модель считает, что на изображении цифра 5.
+- Если результат неверный, причина чаще всего в обучающих данных:
+  мало примеров или неверные метки классов.
 
-3. Нажмите "Обучить модель".
-
-4. Для проверки выберите изображение и нажмите классификацию:
-- "Классифицировать KDTree"
-- или "Классифицировать линейно".
-
-5. В блоке "Последний результат" отображается распознанный класс.
-Если там "digit_5", значит программа распознала цифру 5.
+Важные советы:
+- Не смешивайте классы: цифру 7 нельзя добавлять как digit_5.
+- Для каждого класса добавляйте несколько разных изображений.
+- После добавления новых данных всегда переобучайте модель.
                     </TextBlock>
                 </ScrollViewer>
             </TabItem>

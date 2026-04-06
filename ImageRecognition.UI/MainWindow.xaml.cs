@@ -32,7 +32,8 @@ public partial class MainWindow : Window
     {
         WorkPanel.IsEnabled = enabled;
         ClassNameTextBox.IsEnabled = enabled;
-        ImagePathTextBox.IsEnabled = enabled;
+        TrainingImagePathTextBox.IsEnabled = enabled;
+        InferenceImagePathTextBox.IsEnabled = enabled;
         InitializeSchemaButton.IsEnabled = enabled;
         GenerateDemoButton.IsEnabled = enabled;
     }
@@ -48,7 +49,7 @@ public partial class MainWindow : Window
         return true;
     }
 
-    private void ConnectDbButton_Click(object sender, RoutedEventArgs e)
+    private async void ConnectDbButton_Click(object sender, RoutedEventArgs e)
     {
         try
         {
@@ -69,13 +70,16 @@ public partial class MainWindow : Window
 
             _recognitionService = ApplicationFactory.CreateDefaultRecognitionService(options);
             using var connection = new NpgsqlConnection(options.ToConnectionString());
-            connection.Open();
+            await connection.OpenAsync();
+
+            await _recognitionService.InitializeDatabaseAsync();
 
             _isDatabaseConnected = true;
             SetWorkPanelEnabled(true);
             ConnectionStatusTextBlock.Text = $"БД: подключено ({options.Host}:{options.Port}/{options.Database})";
             ConnectionStatusTextBlock.Foreground = System.Windows.Media.Brushes.DarkGreen;
-            AppendLog("Подключение к существующей БД успешно.");
+            AppendLog("Подключение к существующей БД успешно. Таблицы проверены.");
+            await RefreshDatabaseStatsAsync();
         }
         catch (Exception ex)
         {
@@ -94,6 +98,7 @@ public partial class MainWindow : Window
             if (!EnsureConnected()) return;
             await _recognitionService!.InitializeDatabaseAsync();
             AppendLog("Database initialized (tables created if not exists).");
+            await RefreshDatabaseStatsAsync();
         }
         catch (Exception ex)
         {
@@ -101,7 +106,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void BrowseImageButton_Click(object sender, RoutedEventArgs e)
+    private void BrowseTrainingImageButton_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog
         {
@@ -110,7 +115,20 @@ public partial class MainWindow : Window
 
         if (dialog.ShowDialog() == true)
         {
-            ImagePathTextBox.Text = dialog.FileName;
+            TrainingImagePathTextBox.Text = dialog.FileName;
+        }
+    }
+
+    private void BrowseInferenceImageButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.gif|All files|*.*"
+        };
+
+        if (dialog.ShowDialog() == true)
+        {
+            InferenceImagePathTextBox.Text = dialog.FileName;
         }
     }
 
@@ -119,7 +137,7 @@ public partial class MainWindow : Window
         try
         {
             if (!EnsureConnected()) return;
-            if (!TryValidateImagePath(out string filePath)) return;
+            if (!TryValidateImagePath(TrainingImagePathTextBox.Text, out string filePath)) return;
             if (string.IsNullOrWhiteSpace(ClassNameTextBox.Text))
             {
                 AppendLog("ERROR: Class name is required.");
@@ -128,6 +146,7 @@ public partial class MainWindow : Window
 
             int imageId = await _recognitionService!.AddTrainingImageAsync(filePath, ClassNameTextBox.Text);
             AppendLog($"Training image saved. ImageId={imageId}, class={ClassNameTextBox.Text}");
+            await RefreshDatabaseStatsAsync();
         }
         catch (Exception ex)
         {
@@ -166,7 +185,7 @@ public partial class MainWindow : Window
         {
             if (!EnsureConnected()) return;
             if (!TryReadK(out int k)) return;
-            if (!TryValidateImagePath(out string filePath)) return;
+            if (!TryValidateImagePath(InferenceImagePathTextBox.Text, out string filePath)) return;
 
             var result = await _recognitionService!.ClassifyImageAsync(filePath, k, useKdTree);
             LastResultTextBlock.Text = $"Класс: {result.PredictedClassName} (id={result.PredictedClassId}), метод={(useKdTree ? "KDTree" : "Linear")}";
@@ -229,6 +248,7 @@ public partial class MainWindow : Window
             }
 
             AppendLog($"Demo dataset generated and imported. Samples={totalImported}, folder={baseDir}");
+            await RefreshDatabaseStatsAsync();
         }
         catch (Exception ex)
         {
@@ -247,9 +267,9 @@ public partial class MainWindow : Window
         return true;
     }
 
-    private bool TryValidateImagePath(out string filePath)
+    private bool TryValidateImagePath(string? pathText, out string filePath)
     {
-        filePath = ImagePathTextBox.Text?.Trim() ?? string.Empty;
+        filePath = pathText?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(filePath))
         {
             AppendLog("ERROR: Select image file first.");
@@ -263,6 +283,28 @@ public partial class MainWindow : Window
         }
 
         return true;
+    }
+
+    private async Task RefreshDatabaseStatsAsync()
+    {
+        if (!EnsureConnected()) return;
+        var stats = await _recognitionService!.GetDatabaseOverviewAsync();
+        DatabaseStatsTextBlock.Text =
+            $"Статистика БД: classes={stats.Classes}, images={stats.Images}, features={stats.Features}, models={stats.Models}, experiments={stats.Experiments}, predictions={stats.Predictions}";
+    }
+
+    private async void CheckDatabaseButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (!EnsureConnected()) return;
+            await RefreshDatabaseStatsAsync();
+            AppendLog("Проверка БД выполнена: статистика обновлена.");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"ERROR: {ex.Message}");
+        }
     }
 
     private static void DrawDigit(string path, string digit, int variationIndex)
