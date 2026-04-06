@@ -27,7 +27,8 @@ public sealed class RecognitionRepository : IRecognitionRepository
             CREATE TABLE IF NOT EXISTS images (
                 id SERIAL PRIMARY KEY,
                 class_id INT NOT NULL REFERENCES classes(id),
-                file_path TEXT NOT NULL,
+                image_name TEXT NOT NULL,
+                image_data BYTEA NOT NULL,
                 created_at TIMESTAMP NOT NULL DEFAULT NOW()
             );
 
@@ -75,7 +76,13 @@ public sealed class RecognitionRepository : IRecognitionRepository
             ALTER TABLE classes ADD COLUMN IF NOT EXISTS description TEXT NULL;
             ALTER TABLE classes ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
 
+            ALTER TABLE images ADD COLUMN IF NOT EXISTS image_name TEXT;
+            ALTER TABLE images ADD COLUMN IF NOT EXISTS image_data BYTEA;
             ALTER TABLE images ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
+            UPDATE images SET image_name = COALESCE(image_name, file_path, 'unknown') WHERE image_name IS NULL;
+            UPDATE images SET image_data = COALESCE(image_data, decode('', 'hex')) WHERE image_data IS NULL;
+            ALTER TABLE images ALTER COLUMN image_name SET NOT NULL;
+            ALTER TABLE images ALTER COLUMN image_data SET NOT NULL;
 
             ALTER TABLE models ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
             ALTER TABLE models ADD COLUMN IF NOT EXISTS description TEXT NULL;
@@ -135,19 +142,20 @@ public sealed class RecognitionRepository : IRecognitionRepository
         return value?.ToString();
     }
 
-    public async Task<int> AddImageWithFeaturesAsync(string filePath, int classId, double[] features)
+    public async Task<int> AddImageWithFeaturesAsync(string imageName, byte[] imageData, int classId, double[] features)
     {
         using var connection = _connectionFactory.CreateOpenConnection();
         await using var tx = await connection.BeginTransactionAsync();
 
         int imageId;
         await using (var imageCommand = new NpgsqlCommand("""
-            INSERT INTO images(class_id, file_path) VALUES (@classId, @filePath)
+            INSERT INTO images(class_id, image_name, image_data) VALUES (@classId, @imageName, @imageData)
             RETURNING id;
             """, connection, tx))
         {
             imageCommand.Parameters.AddWithValue("classId", classId);
-            imageCommand.Parameters.AddWithValue("filePath", filePath);
+            imageCommand.Parameters.AddWithValue("imageName", imageName);
+            imageCommand.Parameters.AddWithValue("imageData", imageData);
             object? imageIdObj = await imageCommand.ExecuteScalarAsync();
             imageId = Convert.ToInt32(imageIdObj);
         }

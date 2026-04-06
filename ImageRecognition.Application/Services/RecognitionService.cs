@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using ImageRecognition.Application.Interfaces;
 using ImageRecognition.Domain;
 
@@ -43,9 +44,16 @@ public sealed class RecognitionService : IRecognitionService
             throw new ArgumentException("Class name is required.", nameof(className));
         }
 
+        if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException("Image file not found.", filePath);
+        }
+
         var features = _preprocessingService.ExtractFeatures(filePath);
+        byte[] imageData = await File.ReadAllBytesAsync(filePath);
+        string imageName = Path.GetFileName(filePath);
         int classId = await _repository.EnsureClassAsync(className);
-        return await _repository.AddImageWithFeaturesAsync(filePath, classId, features);
+        return await _repository.AddImageWithFeaturesAsync(imageName, imageData, classId, features);
     }
 
     public async Task<TrainingResult> TrainAsync(string modelName, int k)

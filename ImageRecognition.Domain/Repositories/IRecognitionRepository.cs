@@ -6,7 +6,7 @@ public interface IRecognitionRepository
     Task<(int Classes, int Images, int Features, int Models, int Experiments, int Predictions)> GetStatisticsAsync();
     Task<string?> GetClassNameByIdAsync(int classId);
     Task<int> EnsureClassAsync(string className);
-    Task<int> AddImageWithFeaturesAsync(string filePath, int classId, double[] features);
+    Task<int> AddImageWithFeaturesAsync(string imageName, byte[] imageData, int classId, double[] features);
     Task<IReadOnlyList<(double[] Vector, int ClassId)>> GetTrainingVectorsAsync();
     Task<int> CreateModelAsync(ModelInfo modelInfo);
     Task SaveExperimentAsync(Experiment experiment);

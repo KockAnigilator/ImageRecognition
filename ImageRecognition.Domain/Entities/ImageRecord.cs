@@ -16,10 +16,14 @@ public sealed class ImageRecord
     public int ClassId { get; set; }
 
     /// <summary>
-    /// Путь к файлу изображения на диске.
-    /// Для курсовой достаточно относительного пути или имени файла.
+    /// Имя исходного файла изображения.
     /// </summary>
-    public string FilePath { get; set; } = string.Empty;
+    public string ImageName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Бинарные данные изображения, хранящиеся в PostgreSQL (BYTEA).
+    /// </summary>
+    public byte[] ImageData { get; set; } = Array.Empty<byte>();
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -145,7 +145,7 @@ public partial class MainWindow : Window
             }
 
             int imageId = await _recognitionService!.AddTrainingImageAsync(filePath, ClassNameTextBox.Text);
-            AppendLog($"Training image saved. ImageId={imageId}, class={ClassNameTextBox.Text}");
+            AppendLog($"Training image saved to DB (BYTEA). ImageId={imageId}, class={ClassNameTextBox.Text}");
             await RefreshDatabaseStatsAsync();
         }
         catch (Exception ex)
