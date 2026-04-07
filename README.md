@@ -158,3 +158,12 @@ dotnet test ImageRecognition.Tests/ImageRecognition.Tests.csproj
 - отложенная валидация/кросс-валидация;
 - расширенная визуализация ошибок и матрица ошибок;
 - экспорт отчётов экспериментов.
+
+## 10. Материалы к защите
+
+- `docs/class-reference.md` — памятка по классам и их ответственности.
+- `docs/manual-test-checklist.md` — ручной чек-лист проверки UI/БД.
+- `docs/explanatory-note.md` — заготовка пояснительной записки.
+- `docs/defense-cheatsheet.md` — шпаргалка выступления и ответы на вопросы.
+- `diagrams/*.puml` — диаграммы Use Case, ER, Class, Component, DFD.
+- `generate_defense_presentation.py` — генерация презентации на 19 слайдов.

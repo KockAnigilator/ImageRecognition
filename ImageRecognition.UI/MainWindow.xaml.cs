@@ -93,17 +93,13 @@ public partial class MainWindow : Window
 
     private async void InitializeDatabaseButton_Click(object sender, RoutedEventArgs e)
     {
-        try
+        await RunSafelyAsync(async () =>
         {
             if (!EnsureConnected()) return;
             await _recognitionService!.InitializeDatabaseAsync();
             AppendLog("Database initialized (tables created if not exists).");
             await RefreshDatabaseStatsAsync();
-        }
-        catch (Exception ex)
-        {
-            AppendLog($"ERROR: {ex.Message}");
-        }
+        });
     }
 
     private void BrowseTrainingImageButton_Click(object sender, RoutedEventArgs e)
@@ -134,39 +130,27 @@ public partial class MainWindow : Window
 
     private async void AddTrainingImageButton_Click(object sender, RoutedEventArgs e)
     {
-        try
+        await RunSafelyAsync(async () =>
         {
             if (!EnsureConnected()) return;
             if (!TryValidateImagePath(TrainingImagePathTextBox.Text, out string filePath)) return;
-            if (string.IsNullOrWhiteSpace(ClassNameTextBox.Text))
-            {
-                AppendLog("ERROR: Class name is required.");
-                return;
-            }
+            if (!TryReadClassName(out string className)) return;
 
-            int imageId = await _recognitionService!.AddTrainingImageAsync(filePath, ClassNameTextBox.Text);
-            AppendLog($"Training image saved to DB (BYTEA). ImageId={imageId}, class={ClassNameTextBox.Text}");
+            int imageId = await _recognitionService!.AddTrainingImageAsync(filePath, className);
+            AppendLog($"Training image saved to DB (BYTEA). ImageId={imageId}, class={className}");
             await RefreshDatabaseStatsAsync();
-        }
-        catch (Exception ex)
-        {
-            AppendLog($"ERROR: {ex.Message}");
-        }
+        });
     }
 
     private async void TrainModelButton_Click(object sender, RoutedEventArgs e)
     {
-        try
+        await RunSafelyAsync(async () =>
         {
             if (!EnsureConnected()) return;
             if (!TryReadK(out int k)) return;
             var result = await _recognitionService!.TrainAsync(ModelNameTextBox.Text, k);
             AppendLog($"Model trained. ModelId={result.ModelId}, samples={result.SampleCount}, build={result.BuildTime.TotalMilliseconds:F2} ms");
-        }
-        catch (Exception ex)
-        {
-            AppendLog($"ERROR: {ex.Message}");
-        }
+        });
     }
 
     private async void ClassifyKdTreeButton_Click(object sender, RoutedEventArgs e)
@@ -181,7 +165,7 @@ public partial class MainWindow : Window
 
     private async Task ClassifyAsync(bool useKdTree)
     {
-        try
+        await RunSafelyAsync(async () =>
         {
             if (!EnsureConnected()) return;
             if (!TryReadK(out int k)) return;
@@ -190,31 +174,23 @@ public partial class MainWindow : Window
             var result = await _recognitionService!.ClassifyImageAsync(filePath, k, useKdTree);
             LastResultTextBlock.Text = $"Класс: {result.PredictedClassName} (id={result.PredictedClassId}), метод={(useKdTree ? "KDTree" : "Linear")}";
             AppendLog($"Classified ({(useKdTree ? "KDTree" : "Linear")}): class={result.PredictedClassName}, id={result.PredictedClassId}, search={result.SearchTime.TotalMilliseconds:F2} ms");
-        }
-        catch (Exception ex)
-        {
-            AppendLog($"ERROR: {ex.Message}");
-        }
+        });
     }
 
     private async void BenchmarkButton_Click(object sender, RoutedEventArgs e)
     {
-        try
+        await RunSafelyAsync(async () =>
         {
             if (!EnsureConnected()) return;
             if (!TryReadK(out int k)) return;
             var result = await _recognitionService!.RunBenchmarkAsync(k);
             AppendLog($"Benchmark: accuracy={result.Accuracy:P2}, KDTree={result.KdTreeSearchTime.TotalMilliseconds:F2} ms, Linear={result.LinearSearchTime.TotalMilliseconds:F2} ms");
-        }
-        catch (Exception ex)
-        {
-            AppendLog($"ERROR: {ex.Message}");
-        }
+        });
     }
 
     private async void GenerateDemoSamplesButton_Click(object sender, RoutedEventArgs e)
     {
-        try
+        await RunSafelyAsync(async () =>
         {
             if (!EnsureConnected()) return;
             string baseDir = Path.Combine(AppContext.BaseDirectory, "DemoSamples");
@@ -249,11 +225,7 @@ public partial class MainWindow : Window
 
             AppendLog($"Demo dataset generated and imported. Samples={totalImported}, folder={baseDir}");
             await RefreshDatabaseStatsAsync();
-        }
-        catch (Exception ex)
-        {
-            AppendLog($"ERROR: {ex.Message}");
-        }
+        });
     }
 
     private bool TryReadK(out int k)
@@ -261,6 +233,18 @@ public partial class MainWindow : Window
         if (!int.TryParse(KTextBox.Text, out k) || k <= 0)
         {
             AppendLog("ERROR: k must be a positive integer.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool TryReadClassName(out string className)
+    {
+        className = ClassNameTextBox.Text.Trim();
+        if (string.IsNullOrWhiteSpace(className))
+        {
+            AppendLog("ERROR: Class name is required.");
             return false;
         }
 
@@ -295,14 +279,23 @@ public partial class MainWindow : Window
 
     private async void CheckDatabaseButton_Click(object sender, RoutedEventArgs e)
     {
-        try
+        await RunSafelyAsync(async () =>
         {
             if (!EnsureConnected()) return;
             await RefreshDatabaseStatsAsync();
             AppendLog("Проверка БД выполнена: статистика обновлена.");
+        });
+    }
+
+    private async Task RunSafelyAsync(Func<Task> action)
+    {
+        try
+        {
+            await action();
         }
         catch (Exception ex)
         {
+            // Single error sink avoids duplicated try/catch in handlers.
             AppendLog($"ERROR: {ex.Message}");
         }
     }

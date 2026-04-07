@@ -97,17 +97,16 @@ public sealed class RecognitionService : IRecognitionService
 
     public async Task<ClassificationResult> ClassifyImageAsync(string filePath, int k, bool useKdTree)
     {
-        if (_samples.Count == 0 || _tree is null)
-        {
-            throw new InvalidOperationException("Model is not trained. Run training first.");
-        }
+        EnsureModelIsTrained();
 
         var vector = _preprocessingService.ExtractFeatures(filePath);
         var sw = Stopwatch.StartNew();
+        var points = _samples.Select(s => s.Vector).ToList();
+        var labels = _samples.Select(s => s.ClassId).ToList();
 
         int predicted = useKdTree
-            ? _classifier.Classify(_tree, vector, k)
-            : _classifier.ClassifyLinear(_samples.Select(s => s.Vector).ToList(), _samples.Select(s => s.ClassId).ToList(), vector, k);
+            ? _classifier.Classify(_tree!, vector, k)
+            : _classifier.ClassifyLinear(points, labels, vector, k);
 
         sw.Stop();
 
@@ -137,16 +136,15 @@ public sealed class RecognitionService : IRecognitionService
 
     public async Task<BenchmarkResult> RunBenchmarkAsync(int k)
     {
-        if (_samples.Count == 0 || _tree is null)
-        {
-            throw new InvalidOperationException("Model is not trained. Run training first.");
-        }
+        EnsureModelIsTrained();
+        var points = _samples.Select(s => s.Vector).ToList();
+        var labels = _samples.Select(s => s.ClassId).ToList();
 
         var kdSw = Stopwatch.StartNew();
         int kdCorrect = 0;
         foreach (var sample in _samples)
         {
-            int predicted = _classifier.Classify(_tree, sample.Vector, k);
+            int predicted = _classifier.Classify(_tree!, sample.Vector, k);
             if (predicted == sample.ClassId) kdCorrect++;
         }
         kdSw.Stop();
@@ -154,7 +152,7 @@ public sealed class RecognitionService : IRecognitionService
         var linearSw = Stopwatch.StartNew();
         foreach (var sample in _samples)
         {
-            _classifier.ClassifyLinear(_samples.Select(s => s.Vector).ToList(), _samples.Select(s => s.ClassId).ToList(), sample.Vector, k);
+            _classifier.ClassifyLinear(points, labels, sample.Vector, k);
         }
         linearSw.Stop();
 
@@ -179,5 +177,14 @@ public sealed class RecognitionService : IRecognitionService
             KdTreeSearchTime = kdSw.Elapsed,
             LinearSearchTime = linearSw.Elapsed
         };
+    }
+
+    private void EnsureModelIsTrained()
+    {
+        // Centralized guard keeps all inference scenarios consistent.
+        if (_samples.Count == 0 || _tree is null)
+        {
+            throw new InvalidOperationException("Model is not trained. Run training first.");
+        }
     }
 }

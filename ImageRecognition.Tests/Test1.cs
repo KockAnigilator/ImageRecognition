@@ -1,4 +1,6 @@
 using ImageRecognition.Domain;
+using ImageRecognition.Application.Interfaces;
+using ImageRecognition.Application.Services;
 
 namespace ImageRecognition.Tests;
 
@@ -58,5 +60,64 @@ public sealed class DomainAlgorithmTests
         int linearResult = knn.ClassifyLinear(points, labels, target, 3);
 
         Assert.AreEqual(linearResult, kdTreeResult);
+    }
+
+    [TestMethod]
+    public async Task RecognitionService_TrainAsync_Throws_WhenNoSamples()
+    {
+        var preprocessing = new FakePreprocessingService();
+        var repository = new FakeRecognitionRepository
+        {
+            TrainingVectors = Array.Empty<(double[] Vector, int ClassId)>()
+        };
+
+        var service = new RecognitionService(preprocessing, repository);
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => service.TrainAsync("test", 3));
+    }
+
+    [TestMethod]
+    public async Task RecognitionService_ClassifyAsync_Throws_WhenModelNotTrained()
+    {
+        var preprocessing = new FakePreprocessingService();
+        var repository = new FakeRecognitionRepository();
+        var service = new RecognitionService(preprocessing, repository);
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => service.ClassifyImageAsync("fake.png", 3, true));
+    }
+
+    private sealed class FakePreprocessingService : IImagePreprocessingService
+    {
+        public double[] ExtractFeatures(string filePath) => new double[256];
+    }
+
+    private sealed class FakeRecognitionRepository : IRecognitionRepository
+    {
+        public IReadOnlyList<(double[] Vector, int ClassId)> TrainingVectors { get; set; }
+            = new List<(double[] Vector, int ClassId)>
+            {
+                (new double[] { 0.0, 0.0 }, 1)
+            };
+
+        public Task InitializeDatabaseAsync() => Task.CompletedTask;
+
+        public Task<(int Classes, int Images, int Features, int Models, int Experiments, int Predictions)> GetStatisticsAsync()
+            => Task.FromResult((0, 0, 0, 0, 0, 0));
+
+        public Task<string?> GetClassNameByIdAsync(int classId) => Task.FromResult<string?>("class_1");
+
+        public Task<int> EnsureClassAsync(string className) => Task.FromResult(1);
+
+        public Task<int> AddImageWithFeaturesAsync(string imageName, byte[] imageData, int classId, double[] features)
+            => Task.FromResult(1);
+
+        public Task<IReadOnlyList<(double[] Vector, int ClassId)>> GetTrainingVectorsAsync()
+            => Task.FromResult(TrainingVectors);
+
+        public Task<int> CreateModelAsync(ModelInfo modelInfo) => Task.FromResult(1);
+
+        public Task SaveExperimentAsync(Experiment experiment) => Task.CompletedTask;
+
+        public Task SavePredictionAsync(Prediction prediction) => Task.CompletedTask;
     }
 }
