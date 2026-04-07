@@ -133,17 +133,25 @@ dotnet run --project ImageRecognition.UI
 - добавлять больше разнообразных примеров;
 - переобучать модель после добавления новых данных.
 
-## 8. Проверка работоспособности
+## 8. Проверка работоспособности и типы тестов
 
 ```bash
 dotnet test ImageRecognition.Tests/ImageRecognition.Tests.csproj
+dotnet test ImageRecognition.XUnitTests/ImageRecognition.XUnitTests.csproj
+dotnet test ImageRecognition.NUnitTests/ImageRecognition.NUnitTests.csproj
 ```
 
-Тесты покрывают базовую корректность:
+В проекте используются 3 вида тестирования:
 
-- евклидово расстояние;
-- ближайший сосед в KD-Tree;
-- согласованность классификации KD-Tree и линейного поиска.
+- `MSTest` (`ImageRecognition.Tests`) — основные unit-тесты домена и сервиса.
+- `xUnit` (`ImageRecognition.XUnitTests`) — альтернативные unit-тесты математических инвариантов.
+- `NUnit` (`ImageRecognition.NUnitTests`) — smoke-тесты поведения KD-Tree.
+
+Ручные тесты UI/БД описаны в `docs/manual-test-checklist.md`.
+
+Пример зафиксированных результатов прогонов (демо-набор):
+- точность benchmark: до `99.54%`;
+- время поиска: `KDTree ~29.9-41.7 ms`, `Linear ~66.8-83.4 ms`.
 
 ## 9. Ограничения и развитие
 
