@@ -19,7 +19,7 @@ public sealed class ImagePreprocessingService : IImagePreprocessingService
     {
         if (string.IsNullOrWhiteSpace(filePath))
         {
-            throw new ArgumentException("File path is required.", nameof(filePath));
+            throw new ArgumentException("Необходимо указать путь к файлу.", nameof(filePath));
         }
 
         using var original = new Bitmap(filePath);

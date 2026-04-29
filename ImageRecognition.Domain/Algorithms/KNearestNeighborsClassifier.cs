@@ -23,7 +23,7 @@ public sealed class KNearestNeighbors
         var neighbors = tree.KNearestNeighbors(featureVector, k);
         if (neighbors.Count == 0)
         {
-            throw new InvalidOperationException("KD-Tree does not contain any points.");
+            throw new InvalidOperationException("KD-дерево не содержит точек.");
         }
 
         return MajorityVote(neighbors.Select(n => n.Node.Label));
@@ -49,11 +49,11 @@ public sealed class KNearestNeighbors
         if (featureVector is null) throw new ArgumentNullException(nameof(featureVector));
         if (trainingPoints.Count != trainingLabels.Count)
         {
-            throw new ArgumentException("Training points and labels must have the same length.");
+            throw new ArgumentException("Обучающие точки и метки должны иметь одинаковую длину.");
         }
 
-        if (k <= 0) throw new ArgumentOutOfRangeException(nameof(k), "k must be positive.");
-        if (trainingPoints.Count == 0) throw new InvalidOperationException("Training set is empty.");
+        if (k <= 0) throw new ArgumentOutOfRangeException(nameof(k), "Параметр k должен быть положительным.");
+        if (trainingPoints.Count == 0) throw new InvalidOperationException("Обучающая выборка пуста.");
 
         var distances = new List<(int Label, double Distance)>(trainingPoints.Count);
         for (int i = 0; i < trainingPoints.Count; i++)

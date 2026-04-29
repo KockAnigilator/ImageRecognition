@@ -1,7 +1,7 @@
 # ImageRecognition
 
 Курсовой проект по дисциплине **«Алгоритмы и структуры данных»**.  
-Система распознаёт изображения цифр и простых геометрических фигур с помощью **kNN** и ускоряет поиск соседей с помощью **KD-Tree**.
+Система распознаёт изображения цифр и простых геометрических фигур с помощью **метода k ближайших соседей** и ускоряет поиск соседей с помощью **KD-дерева**.
 
 ## 1. Что реализовано
 
@@ -22,7 +22,7 @@
   - подключение к БД
   - работа с моделью
   - справка
-- Benchmark:
+- Проверка точности:
   - сравнение `KD-Tree` и линейного поиска
   - точность и время выполнения
 
@@ -33,17 +33,17 @@
 - WPF
 - PostgreSQL
 - Npgsql
-- MSTest
+- xUnit
 
 ## 3. Архитектура
 
 Слоистая архитектура:
 
-- `ImageRecognition.UI` — Presentation Layer
-- `ImageRecognition.Application` — Application Layer
-- `ImageRecognition.Domain` — Domain Layer
-- `ImageRecognition.Infrastructure` — Infrastructure Layer
-- `ImageRecognition.Tests` — Unit tests
+- `ImageRecognition.UI` — слой представления
+- `ImageRecognition.Application` — прикладной слой
+- `ImageRecognition.Domain` — предметный слой
+- `ImageRecognition.Infrastructure` — инфраструктурный слой
+- `ImageRecognition.XUnitTests` — модульные тесты
 
 ## 4. Структура БД
 
@@ -113,7 +113,7 @@ dotnet run --project ImageRecognition.UI
 3. Смотри блок **«Последний результат»**:
    - `Класс: digit_5` означает, что система распознала цифру 5.
 
-### Шаг 5. Benchmark
+### Шаг 5. Проверка точности
 
 Нажми **«Запустить benchmark»** для сравнения:
 
@@ -136,21 +136,18 @@ dotnet run --project ImageRecognition.UI
 ## 8. Проверка работоспособности и типы тестов
 
 ```bash
-dotnet test ImageRecognition.Tests/ImageRecognition.Tests.csproj
 dotnet test ImageRecognition.XUnitTests/ImageRecognition.XUnitTests.csproj
-dotnet test ImageRecognition.NUnitTests/ImageRecognition.NUnitTests.csproj
 ```
 
-В проекте используются 3 вида тестирования:
+В проекте используются 2 вида тестирования:
 
-- `MSTest` (`ImageRecognition.Tests`) — основные unit-тесты домена и сервиса.
-- `xUnit` (`ImageRecognition.XUnitTests`) — альтернативные unit-тесты математических инвариантов.
-- `NUnit` (`ImageRecognition.NUnitTests`) — smoke-тесты поведения KD-Tree.
+- `xUnit` (`ImageRecognition.XUnitTests`) — автоматические модульные тесты.
+- ручные проверки UI/БД по чек-листу.
 
 Ручные тесты UI/БД описаны в `docs/manual-test-checklist.md`.
 
 Пример зафиксированных результатов прогонов (демо-набор):
-- точность benchmark: до `99.54%`;
+- точность проверки: до `99.54%`;
 - время поиска: `KDTree ~29.9-41.7 ms`, `Linear ~66.8-83.4 ms`.
 
 ## 9. Ограничения и развитие

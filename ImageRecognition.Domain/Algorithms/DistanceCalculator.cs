@@ -19,7 +19,7 @@ public static class DistanceCalculator
         if (b is null) throw new ArgumentNullException(nameof(b));
         if (a.Length != b.Length)
         {
-            throw new ArgumentException("Vectors must have the same dimension.");
+            throw new ArgumentException("Векторы должны иметь одинаковую размерность.");
         }
 
         double sum = 0.0;

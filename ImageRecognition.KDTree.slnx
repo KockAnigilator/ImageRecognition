@@ -2,8 +2,6 @@
   <Project Path="ImageRecognition.Application/ImageRecognition.Application.csproj" />
   <Project Path="ImageRecognition.Domain/ImageRecognition.Domain.csproj" />
   <Project Path="ImageRecognition.Infrastructure/ImageRecognition.Infrastructure.csproj" />
-  <Project Path="ImageRecognition.NUnitTests/ImageRecognition.NUnitTests.csproj" />
-  <Project Path="ImageRecognition.Tests/ImageRecognition.Tests.csproj" />
   <Project Path="ImageRecognition.UI/ImageRecognition.UI.csproj" />
   <Project Path="ImageRecognition.XUnitTests/ImageRecognition.XUnitTests.csproj" />
 </Solution>

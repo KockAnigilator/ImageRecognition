@@ -42,7 +42,7 @@ public partial class MainWindow : Window
     {
         if (!_isDatabaseConnected || _recognitionService is null)
         {
-            AppendLog("ERROR: Сначала подключитесь к существующей БД.");
+            AppendLog("ОШИБКА: сначала подключитесь к существующей БД.");
             return false;
         }
 
@@ -55,7 +55,7 @@ public partial class MainWindow : Window
         {
             if (!int.TryParse(DbPortTextBox.Text, out int port) || port <= 0)
             {
-                AppendLog("ERROR: Некорректный порт БД.");
+                AppendLog("ОШИБКА: некорректный порт БД.");
                 return;
             }
 
@@ -87,7 +87,7 @@ public partial class MainWindow : Window
             SetWorkPanelEnabled(false);
             ConnectionStatusTextBlock.Text = "БД: ошибка подключения";
             ConnectionStatusTextBlock.Foreground = System.Windows.Media.Brushes.DarkRed;
-            AppendLog($"ERROR: {ex.Message}");
+            AppendLog($"ОШИБКА: {ex.Message}");
         }
     }
 
@@ -97,7 +97,7 @@ public partial class MainWindow : Window
         {
             if (!EnsureConnected()) return;
             await _recognitionService!.InitializeDatabaseAsync();
-            AppendLog("Database initialized (tables created if not exists).");
+            AppendLog("База данных инициализирована (таблицы созданы при необходимости).");
             await RefreshDatabaseStatsAsync();
         });
     }
@@ -106,7 +106,7 @@ public partial class MainWindow : Window
     {
         var dialog = new OpenFileDialog
         {
-            Filter = "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.gif|All files|*.*"
+            Filter = "Файлы изображений|*.png;*.jpg;*.jpeg;*.bmp;*.gif|Все файлы|*.*"
         };
 
         if (dialog.ShowDialog() == true)
@@ -119,7 +119,7 @@ public partial class MainWindow : Window
     {
         var dialog = new OpenFileDialog
         {
-            Filter = "Image files|*.png;*.jpg;*.jpeg;*.bmp;*.gif|All files|*.*"
+            Filter = "Файлы изображений|*.png;*.jpg;*.jpeg;*.bmp;*.gif|Все файлы|*.*"
         };
 
         if (dialog.ShowDialog() == true)
@@ -137,7 +137,7 @@ public partial class MainWindow : Window
             if (!TryReadClassName(out string className)) return;
 
             int imageId = await _recognitionService!.AddTrainingImageAsync(filePath, className);
-            AppendLog($"Training image saved to DB (BYTEA). ImageId={imageId}, class={className}");
+            AppendLog($"Обучающее изображение сохранено в БД (BYTEA). Идентификатор={imageId}, класс={className}");
             await RefreshDatabaseStatsAsync();
         });
     }
@@ -149,7 +149,7 @@ public partial class MainWindow : Window
             if (!EnsureConnected()) return;
             if (!TryReadK(out int k)) return;
             var result = await _recognitionService!.TrainAsync(ModelNameTextBox.Text, k);
-            AppendLog($"Model trained. ModelId={result.ModelId}, samples={result.SampleCount}, build={result.BuildTime.TotalMilliseconds:F2} ms");
+            AppendLog($"Модель обучена. Идентификатор модели={result.ModelId}, примеров={result.SampleCount}, построение={result.BuildTime.TotalMilliseconds:F2} мс");
         });
     }
 
@@ -172,8 +172,8 @@ public partial class MainWindow : Window
             if (!TryValidateImagePath(InferenceImagePathTextBox.Text, out string filePath)) return;
 
             var result = await _recognitionService!.ClassifyImageAsync(filePath, k, useKdTree);
-            LastResultTextBlock.Text = $"Класс: {result.PredictedClassName} (id={result.PredictedClassId}), метод={(useKdTree ? "KDTree" : "Linear")}";
-            AppendLog($"Classified ({(useKdTree ? "KDTree" : "Linear")}): class={result.PredictedClassName}, id={result.PredictedClassId}, search={result.SearchTime.TotalMilliseconds:F2} ms");
+            LastResultTextBlock.Text = $"Класс: {result.PredictedClassName} (идентификатор={result.PredictedClassId}), метод={(useKdTree ? "KD-дерево" : "Линейный поиск")}";
+            AppendLog($"Классификация ({(useKdTree ? "KD-дерево" : "Линейный поиск")}): класс={result.PredictedClassName}, идентификатор={result.PredictedClassId}, поиск={result.SearchTime.TotalMilliseconds:F2} мс");
         });
     }
 
@@ -184,7 +184,7 @@ public partial class MainWindow : Window
             if (!EnsureConnected()) return;
             if (!TryReadK(out int k)) return;
             var result = await _recognitionService!.RunBenchmarkAsync(k);
-            AppendLog($"Benchmark: accuracy={result.Accuracy:P2}, KDTree={result.KdTreeSearchTime.TotalMilliseconds:F2} ms, Linear={result.LinearSearchTime.TotalMilliseconds:F2} ms");
+            AppendLog($"Проверка точности: точность={result.Accuracy:P2}, KD-дерево={result.KdTreeSearchTime.TotalMilliseconds:F2} мс, линейный поиск={result.LinearSearchTime.TotalMilliseconds:F2} мс");
         });
     }
 
@@ -193,7 +193,7 @@ public partial class MainWindow : Window
         await RunSafelyAsync(async () =>
         {
             if (!EnsureConnected()) return;
-            string baseDir = Path.Combine(AppContext.BaseDirectory, "DemoSamples");
+            string baseDir = Path.Combine(AppContext.BaseDirectory, "ДемонстрационныеПримеры");
             Directory.CreateDirectory(baseDir);
 
             var specs = new List<(string ClassName, Action<string, int> DrawAction)>
@@ -223,7 +223,7 @@ public partial class MainWindow : Window
                 }
             }
 
-            AppendLog($"Demo dataset generated and imported. Samples={totalImported}, folder={baseDir}");
+            AppendLog($"Демонстрационный набор создан и загружен. Примеров={totalImported}, папка={baseDir}");
             await RefreshDatabaseStatsAsync();
         });
     }
@@ -232,7 +232,7 @@ public partial class MainWindow : Window
     {
         if (!int.TryParse(KTextBox.Text, out k) || k <= 0)
         {
-            AppendLog("ERROR: k must be a positive integer.");
+            AppendLog("ОШИБКА: значение k должно быть положительным целым числом.");
             return false;
         }
 
@@ -244,7 +244,7 @@ public partial class MainWindow : Window
         className = ClassNameTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(className))
         {
-            AppendLog("ERROR: Class name is required.");
+            AppendLog("ОШИБКА: необходимо указать имя класса.");
             return false;
         }
 
@@ -256,13 +256,13 @@ public partial class MainWindow : Window
         filePath = pathText?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(filePath))
         {
-            AppendLog("ERROR: Select image file first.");
+            AppendLog("ОШИБКА: сначала выберите файл изображения.");
             return false;
         }
 
         if (!File.Exists(filePath))
         {
-            AppendLog($"ERROR: File not found: {filePath}");
+            AppendLog($"ОШИБКА: файл не найден: {filePath}");
             return false;
         }
 
@@ -296,10 +296,12 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             // Single error sink avoids duplicated try/catch in handlers.
-            AppendLog($"ERROR: {ex.Message}");
+            AppendLog($"ОШИБКА: {ex.Message}");
         }
     }
 
+    // Demo sample generators are intentionally simple and deterministic:
+    // they make it easy to explain training data quality during defense.
     private static void DrawDigit(string path, string digit, int variationIndex)
     {
         using var bmp = CreateCanvas();
@@ -379,26 +381,5 @@ public partial class MainWindow : Window
     private static void SavePng(string path, Bitmap bitmap)
     {
         bitmap.Save(path, ImageFormat.Png);
-    }
-
-    private void HelpButton_Click(object sender, RoutedEventArgs e)
-    {
-        const string helpText =
-            "Справка по работе с приложением\n\n" +
-            "1) Введите параметры подключения к уже существующей БД PostgreSQL.\n" +
-            "2) Нажмите «Подключиться к БД».\n" +
-            "3) При необходимости нажмите «Инициализировать таблицы».\n" +
-            "4) Добавьте обучающие данные:\n" +
-            "   - вручную (Class name + Image path + Добавить обучающее изображение)\n" +
-            "   - либо кнопкой «Generate Demo Samples and Import».\n" +
-            "5) Задайте k и нажмите «Обучить модель».\n" +
-            "6) Выберите изображение и выполните классификацию (KDTree или линейно).\n" +
-            "7) Для анализа скорости запустите benchmark.\n\n" +
-            "Типичные ошибки:\n" +
-            "- «Сначала подключитесь к БД» — не выполнено подключение.\n" +
-            "- «No training samples found» — не добавлены обучающие изображения.\n" +
-            "- «Select image file first» — не выбран файл.";
-
-        MessageBox.Show(helpText, "Справка", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }

@@ -22,7 +22,7 @@ public sealed class KDTree
     {
         if (dimension <= 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(dimension), "Dimension must be positive.");
+            throw new ArgumentOutOfRangeException(nameof(dimension), "Размерность должна быть положительной.");
         }
 
         Dimension = dimension;
@@ -39,7 +39,7 @@ public sealed class KDTree
         if (labels is null) throw new ArgumentNullException(nameof(labels));
         if (points.Count != labels.Count)
         {
-            throw new ArgumentException("Points and labels collections must have the same length.");
+            throw new ArgumentException("Коллекции точек и меток должны иметь одинаковую длину.");
         }
 
         if (points.Count == 0)
@@ -109,7 +109,7 @@ public sealed class KDTree
         if (point is null) throw new ArgumentNullException(nameof(point));
         if (point.Length != Dimension)
         {
-            throw new ArgumentException("Point has incorrect dimension.", nameof(point));
+            throw new ArgumentException("Точка имеет неверную размерность.", nameof(point));
         }
 
         Root = InsertRecursive(Root, point, label, depth: 0);
@@ -144,7 +144,7 @@ public sealed class KDTree
         if (target is null) throw new ArgumentNullException(nameof(target));
         if (target.Length != Dimension)
         {
-            throw new ArgumentException("Target has incorrect dimension.", nameof(target));
+            throw new ArgumentException("Целевая точка имеет неверную размерность.", nameof(target));
         }
 
         if (Root is null) return null;
@@ -198,12 +198,12 @@ public sealed class KDTree
         if (target is null) throw new ArgumentNullException(nameof(target));
         if (target.Length != Dimension)
         {
-            throw new ArgumentException("Target has incorrect dimension.", nameof(target));
+            throw new ArgumentException("Целевая точка имеет неверную размерность.", nameof(target));
         }
 
         if (k <= 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(k), "k must be positive.");
+            throw new ArgumentOutOfRangeException(nameof(k), "Параметр k должен быть положительным.");
         }
 
         var best = new List<(KDNode Node, double Distance)>(capacity: k);

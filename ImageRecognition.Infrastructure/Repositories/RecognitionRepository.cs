@@ -79,7 +79,26 @@ public sealed class RecognitionRepository : IRecognitionRepository
             ALTER TABLE images ADD COLUMN IF NOT EXISTS image_name TEXT;
             ALTER TABLE images ADD COLUMN IF NOT EXISTS image_data BYTEA;
             ALTER TABLE images ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
-            UPDATE images SET image_name = COALESCE(image_name, file_path, 'unknown') WHERE image_name IS NULL;
+
+            -- Заполняем image_name безопасно:
+            -- если в старой схеме был file_path — переносим имя, иначе используем 'unknown'.
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.columns
+                    WHERE table_name = 'images'
+                      AND column_name = 'file_path'
+                ) THEN
+                    EXECUTE
+                        'UPDATE images
+                         SET image_name = COALESCE(image_name, file_path, ''unknown'')
+                         WHERE image_name IS NULL';
+                ELSE
+                    UPDATE images SET image_name = 'unknown' WHERE image_name IS NULL;
+                END IF;
+            END $$;
+
             UPDATE images SET image_data = COALESCE(image_data, decode('', 'hex')) WHERE image_data IS NULL;
             ALTER TABLE images ALTER COLUMN image_name SET NOT NULL;
             ALTER TABLE images ALTER COLUMN image_data SET NOT NULL;

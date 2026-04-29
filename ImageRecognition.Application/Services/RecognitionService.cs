@@ -5,6 +5,9 @@ using ImageRecognition.Domain;
 
 namespace ImageRecognition.Application.Services;
 
+/// <summary>
+/// Application-level orchestrator: validates input, runs algorithms and persists results.
+/// </summary>
 public sealed class RecognitionService : IRecognitionService
 {
     private readonly IImagePreprocessingService _preprocessingService;
@@ -41,14 +44,15 @@ public sealed class RecognitionService : IRecognitionService
     {
         if (string.IsNullOrWhiteSpace(className))
         {
-            throw new ArgumentException("Class name is required.", nameof(className));
+            throw new ArgumentException("Необходимо указать имя класса.", nameof(className));
         }
 
         if (!File.Exists(filePath))
         {
-            throw new FileNotFoundException("Image file not found.", filePath);
+            throw new FileNotFoundException("Файл изображения не найден.", filePath);
         }
 
+        // Persist both feature vector and original image bytes to keep experiments reproducible.
         var features = _preprocessingService.ExtractFeatures(filePath);
         byte[] imageData = await File.ReadAllBytesAsync(filePath);
         string imageName = Path.GetFileName(filePath);
@@ -63,7 +67,7 @@ public sealed class RecognitionService : IRecognitionService
         _samples = await _repository.GetTrainingVectorsAsync();
         if (_samples.Count == 0)
         {
-            throw new InvalidOperationException("No training samples found. Add images first.");
+            throw new InvalidOperationException("Не найдены обучающие примеры. Сначала добавьте изображения.");
         }
 
         int dimension = _samples[0].Vector.Length;
@@ -79,12 +83,12 @@ public sealed class RecognitionService : IRecognitionService
 
         _modelId = await _repository.CreateModelAsync(new ModelInfo
         {
-            Name = string.IsNullOrWhiteSpace(modelName) ? $"kNN_k={k}" : modelName,
+            Name = string.IsNullOrWhiteSpace(modelName) ? $"модель_kNN_k={k}" : modelName,
             Dimension = dimension,
             TrainingSampleCount = _samples.Count,
             DefaultK = k,
             CreatedAt = DateTime.UtcNow,
-            Description = "Model trained in coursework app."
+            Description = "Модель обучена в учебном приложении."
         });
 
         return new TrainingResult
@@ -122,7 +126,7 @@ public sealed class RecognitionService : IRecognitionService
             CreatedAt = DateTime.UtcNow
         });
 
-        string predictedClassName = await _repository.GetClassNameByIdAsync(predicted) ?? $"class_{predicted}";
+        string predictedClassName = await _repository.GetClassNameByIdAsync(predicted) ?? $"класс_{predicted}";
 
         return new ClassificationResult
         {
@@ -168,7 +172,7 @@ public sealed class RecognitionService : IRecognitionService
             KdTreeSearchTimeMs = kdSw.Elapsed.TotalMilliseconds,
             LinearSearchTimeMs = linearSw.Elapsed.TotalMilliseconds,
             PerformedAt = DateTime.UtcNow,
-            Notes = "Benchmark on training set"
+            Notes = "Проверка точности на обучающей выборке"
         });
 
         return new BenchmarkResult
@@ -184,7 +188,7 @@ public sealed class RecognitionService : IRecognitionService
         // Centralized guard keeps all inference scenarios consistent.
         if (_samples.Count == 0 || _tree is null)
         {
-            throw new InvalidOperationException("Model is not trained. Run training first.");
+            throw new InvalidOperationException("Модель не обучена. Сначала выполните обучение.");
         }
     }
 }
