@@ -6,7 +6,7 @@ using ImageRecognition.Domain;
 namespace ImageRecognition.Application.Services;
 
 /// <summary>
-/// Application-level orchestrator: validates input, runs algorithms and persists results.
+/// Бизнес - логика
 /// </summary>
 public sealed class RecognitionService : IRecognitionService
 {
